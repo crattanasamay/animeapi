@@ -7,14 +7,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration.UserSecrets;
 
 var builder = WebApplication.CreateBuilder(args);
+ConfigurationManager configuration = builder.Configuration;
+
 
 // Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddDbContext<MyDbContext>(options => options.UseSqlServer(
-    builder.Configuration["ConnectiongStringAzure"]
-)); 
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
@@ -41,7 +41,10 @@ builder.Services.AddSwaggerGen(c =>
     };
     c.AddSecurityRequirement(requirement);
 });
-builder.Services.AddSingleton<IAnimeRepository, AnimeRepository>();
+builder.Services.AddDbContext<MyDbContext>(options => options.UseSqlServer(
+    builder.Configuration["ConnectionStringAzure"]
+));
+builder.Services.AddTransient<IAnimeRepository, AnimeRepository>();
 builder.Services.AddScoped<ApiKeyAuthFilter>();
 
 var app = builder.Build();

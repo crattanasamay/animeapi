@@ -2,12 +2,13 @@
 using MyAnimeAPI.Authentication;
 using MyAnimeAPI.Interfaces;
 using MyAnimeAPI.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace MyAnimeAPI.Controllers
 {
     [ApiController]
 
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
 
     public class AnimeController : ControllerBase
     {
@@ -25,8 +26,12 @@ namespace MyAnimeAPI.Controllers
         [HttpGet]
         public IEnumerable<Anime> GetAnimes()
         {
+            _anime.GetUsersMaxRating();
             return _anime.GetAnimes();
         }
+
+       
+
 
         [HttpGet("{id}")]
         public ActionResult<Anime> GetAnime(int id)
@@ -42,14 +47,27 @@ namespace MyAnimeAPI.Controllers
             return Ok();
         }
 
-        [HttpPost("{id}")]
-        [ServiceFilter(typeof(ApiKeyAuthFilter))]
-        public ActionResult UpdateAnime(int id)
+        [HttpPost()]
+        public ActionResult UpdateAnime([FromBody,Required]Anime anime)
         {
-            return Ok();
+
+            return Ok(anime);
         }
+
+        [HttpGet]
+        [ServiceFilter(typeof(ApiKeyAuthFilter))]
+        public List<UserMaxRating> GetUserMaxRating()
+        {
+            return _anime.GetUsersMaxRating();
+        }
+
+
       
-     
-      
+
+
+
+
+
+
     }
 }
