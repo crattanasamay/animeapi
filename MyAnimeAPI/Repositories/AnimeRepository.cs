@@ -5,6 +5,7 @@ using MyAnimeAPI.DBContext;
 using Microsoft.Data.SqlClient;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using System.Net;
+using Newtonsoft.Json;
 
 namespace MyAnimeAPI.Repositories
 {
@@ -37,28 +38,80 @@ namespace MyAnimeAPI.Repositories
 
         public IEnumerable<Anime> GetAnimes()
         {
-            return Enumerable.Range(1, 2).Select(index => new Anime
+
+            var findAnime = _dbContext.Anime.ToList();
+
+            Console.WriteLine(findAnime);
+
+            if(findAnime == null)
             {
-                Id = index,
-                Name = "Engage Kiss",
-                Season = "Fall",
-                Summary = "Hot and Spicy",
-            })
-           .ToList();
+                return Enumerable.Empty<Anime>();
+            }
+            else
+            {
+                return findAnime;
+            }
+
 
         }
 
-        public ActionResult DeleteAnime(int id)
+        public IActionResult DeleteAnime(int id)
         {
+            Anime findAnime = _dbContext.Anime.FirstOrDefault(u => u.Id == id);
 
-            return new NotFoundResult();
+            if(findAnime == null)
+            {
+                var result = new
+                {
+                    sucess = false,
+                    responseText = "Id not found"
+                };
+                return new JsonResult(result);
+            }
+            else
+            {
+                _dbContext.Anime.Remove(findAnime);
+                _dbContext.SaveChanges();
+                var result = new
+                {
+                    sucess = true,
+                    responseText = "Id of anime has been deleted"
+                };
+                return new JsonResult(result);
+
+            }
         }
 
 
-        public ActionResult UpdateAnime(int id)
+        public IActionResult UpdateAnime(int id, Anime anime)
         {
+            using (var dbContext = _dbContext) { 
+                var existingAnime = dbContext.Anime.FirstOrDefault(a => a.Id == id);
+                if(existingAnime == null)
+                {
+                    var result = new
+                    {
+                        success = false,
+                        responseText = "could not find anime id"
+                    };
+                    return new JsonResult(result);
+                }
+                else
+                {
+                    existingAnime.Name = anime.Name;
+                    existingAnime.Season = anime.Season;
+                    existingAnime.Summary = anime.Summary;
+                    dbContext.SaveChanges();
 
-            return new NotFoundResult();
+                    var result = new
+                    {
+                        success = true,
+                        responseText = "updated animed"
+                    };
+                    return new JsonResult(result);
+                }
+            }
+            
         }
 
         public List<UserMaxRating> GetUsersMaxRating()

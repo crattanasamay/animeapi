@@ -42,16 +42,16 @@ namespace MyAnimeAPI.Controllers
 
         [HttpDelete("{id}")]
         [ServiceFilter(typeof(ApiKeyAuthFilter))]
-        public ActionResult DeleteAnime(int id)
+        public IActionResult DeleteAnime(int id)
         {
-            return Ok();
+            return _anime.DeleteAnime(id);
         }
 
-        [HttpPost()]
-        public ActionResult UpdateAnime([FromBody,Required]Anime anime)
+        [HttpPut("{id}")]
+        public IActionResult UpdateAnime(int id, [FromBody,Required]Anime anime)
         {
-
-            return Ok(anime);
+            var updateAnime = _anime.UpdateAnime(id, anime);
+            return updateAnime;
         }
 
         [HttpGet]

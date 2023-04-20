@@ -12,9 +12,9 @@ namespace MyAnimeAPI.Interfaces
 
         public IEnumerable<Anime> GetAnimes();
 
-        public ActionResult DeleteAnime(int id);
+        public IActionResult DeleteAnime(int id);
 
-        public ActionResult UpdateAnime(int id);
+        public IActionResult UpdateAnime(int id,Anime anime);
 
         public List<UserMaxRating> GetUsersMaxRating();
     }
